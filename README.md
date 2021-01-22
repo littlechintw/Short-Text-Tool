@@ -1,4 +1,4 @@
-# short-url
+# short-text-tool
 
 ## Project setup
 ```
