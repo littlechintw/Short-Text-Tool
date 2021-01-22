@@ -10,7 +10,12 @@
       <h1>Send a text message by a short url!</h1>
     </v-card>
     <br />
-    <v-card class="mx-auto" min-width="344px" max-width="60%">
+    <v-card
+      class="mx-auto"
+      min-width="344px"
+      max-width="60%"
+      v-if="!submitStatus"
+    >
       <v-container fluid>
         <v-row>
           <v-col cols="12">
@@ -43,7 +48,22 @@
         </v-row>
       </v-container>
     </v-card>
-    <br />
+
+    <v-card
+      class="mx-auto"
+      min-width="344px"
+      max-width="60%"
+      v-if="submitStatus"
+    >
+      <h1>{{ shortUrl }}</h1>
+      <v-btn @click="copyText" :color="copyBtn.color" small>
+        <v-icon left dark> mdi-content-copy </v-icon>{{ copyBtn.text }}
+      </v-btn>
+      <br /><br />
+      <a :href="'https://sm.littlechin.tw/#t=' + shortUrl" target="_blank">
+        Show it to everyone by Screen Message!
+      </a>
+    </v-card>
   </div>
 </template>
 
@@ -57,27 +77,38 @@ export default {
   data: () => ({
     window_height: 700,
     window_width: 1600,
+    submitStatus: false,
     valid: true,
     text: "",
     textRules: [(v) => !!v || "Text is required"],
     checkbox: false,
+    shortUrl: "N/A",
+    copyBtn: {
+      color: "info",
+      text: "Copy the URL!",
+    },
   }),
   methods: {
     validate() {
       this.$refs.form.validate();
+      let api_url =
+        "https://script.google.com/macros/s/AKfycbwS03etsMVVn6w6eP28a5I8WX3c1VbaBNXF17iQjyl0f3DujD6ynqPZ/exec?u=" +
+        this.text;
       this.$axios
-        .post(
-          "https://script.google.com/macros/s/AKfycbwS03etsMVVn6w6eP28a5I8WX3c1VbaBNXF17iQjyl0f3DujD6ynqPZ/exec",
-          {
-            u: this.text,
-          }
-        )
+        .get(api_url)
         .then((resp) => {
-          alert(resp);
+          console.log(resp);
+          this.submitStatus = true;
+          this.shortUrl = "s.littlechin.tw/" + resp.data.s;
         })
         .catch((err) => {
           alert(err);
         });
+    },
+    copyText() {
+      navigator.clipboard.writeText(this.shortUrl);
+      this.copyBtn.color = "success";
+      this.copyBtn.text = "You copy it!";
     },
   },
   created: function () {
