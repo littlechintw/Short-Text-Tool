@@ -65,19 +65,6 @@ export default {
   methods: {
     validate() {
       this.$refs.form.validate();
-      // this.$axios
-      //   .post(
-      //     "https://script.google.com/macros/s/AKfycbwS03etsMVVn6w6eP28a5I8WX3c1VbaBNXF17iQjyl0f3DujD6ynqPZ/exec",
-      //     {
-      //       u: this.text,
-      //     }
-      //   )
-      //   .then(function (response) {
-      //     alert(response);
-      //   })
-      //   .catch(function (error) {
-      //     alert(error);
-      //   });
       this.$axios
         .post(
           "https://script.google.com/macros/s/AKfycbwS03etsMVVn6w6eP28a5I8WX3c1VbaBNXF17iQjyl0f3DujD6ynqPZ/exec",
@@ -91,7 +78,6 @@ export default {
         .catch((err) => {
           alert(err);
         });
-      alert("ok, " + this.text);
     },
   },
   created: function () {
