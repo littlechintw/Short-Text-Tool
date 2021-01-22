@@ -1,10 +1,23 @@
 <template>
   <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view/>
+    <v-app>
+      <v-app-bar app dark>
+        <v-toolbar-title>Short Text Tool</v-toolbar-title>
+        <v-spacer></v-spacer>
+      </v-app-bar>
+
+      <v-content>
+        <router-view />
+      </v-content>
+
+      <v-footer padless class="font-weight-medium">
+        <v-col class="text-center" cols="12" style="font-size: 14px">
+          &copy; {{ new Date().getFullYear() }} Copyright
+          <a href="https://littlechintw.github.io">littlechintw.github.io</a>.
+          All rights reserved.
+        </v-col>
+      </v-footer>
+    </v-app>
   </div>
 </template>
 
