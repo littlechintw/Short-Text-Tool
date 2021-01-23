@@ -12,6 +12,14 @@ const routes = [
       title: 'Short URL Tool',
     },
   },
+  {
+    path: '/:id',
+    name: 'Result',
+    component: () => import('../views/Result.vue'),
+    meta:{
+      title: 'Short URL Tool',
+    },
+  },
 ]
 
 const router = new VueRouter({

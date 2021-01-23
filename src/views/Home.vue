@@ -10,12 +10,22 @@
       <h1>Send a text message by a short url!</h1>
     </v-card>
     <br />
+
+    <!-- Fill in the text in this card and send -->
     <v-card
       class="mx-auto"
       min-width="344px"
       max-width="60%"
       v-if="!submitStatus"
+      :disabled="form.summit"
     >
+      <v-progress-linear
+        buffer-value="0"
+        :color="progressLinear.color"
+        reverse
+        stream
+        value="0"
+      ></v-progress-linear>
       <v-container fluid>
         <v-row>
           <v-col cols="12">
@@ -47,8 +57,15 @@
           </v-col>
         </v-row>
       </v-container>
+      <v-progress-linear
+        buffer-value="0"
+        :color="progressLinear.color"
+        stream
+        value="0"
+      ></v-progress-linear>
     </v-card>
 
+    <!-- Show the final result -->
     <v-card
       class="mx-auto"
       min-width="344px"
@@ -87,10 +104,18 @@ export default {
       color: "info",
       text: "Copy the URL!",
     },
+    progressLinear: {
+      color: "info",
+    },
+    form: {
+      summit: false,
+    },
   }),
   methods: {
     validate() {
       this.$refs.form.validate();
+      this.progressLinear.color = "red";
+      this.form.summit = true;
       let api_url =
         "https://script.google.com/macros/s/AKfycbwS03etsMVVn6w6eP28a5I8WX3c1VbaBNXF17iQjyl0f3DujD6ynqPZ/exec?u=" +
         this.text;
@@ -98,12 +123,16 @@ export default {
         .get(api_url)
         .then((resp) => {
           console.log(resp);
-          this.submitStatus = true;
-          this.shortUrl = "s.littlechin.tw/" + resp.data.s;
+          if (!resp.data.err) {
+            this.submitStatus = true;
+            this.shortUrl = "s.littlechin.tw/" + resp.data.s;
+          }
         })
         .catch((err) => {
           alert(err);
         });
+      this.progressLinear.color = "info";
+      this.form.summit = false;
     },
     copyText() {
       navigator.clipboard.writeText(this.shortUrl);
