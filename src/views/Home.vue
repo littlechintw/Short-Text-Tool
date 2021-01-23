@@ -40,7 +40,7 @@
                 v-model="text"
                 :rules="textRules"
                 counter
-                maxlength="200"
+                maxlength="2000"
                 label="Text"
               ></v-text-field>
 
@@ -135,7 +135,7 @@ export default {
       this.form.summit = false;
     },
     copyText() {
-      navigator.clipboard.writeText(this.shortUrl);
+      navigator.clipboard.writeText('https://' + this.shortUrl);
       this.copyBtn.color = "success";
       this.copyBtn.text = "You copy it!";
     },
