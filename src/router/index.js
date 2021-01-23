@@ -9,7 +9,7 @@ const routes = [
     name: 'Home',
     component: () => import('../views/Home.vue'),
     meta:{
-      title: 'Short URL Tool',
+      title: 'Short Text Tool',
     },
   },
   {
@@ -17,7 +17,7 @@ const routes = [
     name: 'Result',
     component: () => import('../views/Result.vue'),
     meta:{
-      title: 'Short URL Tool',
+      title: 'Short Text Tool',
     },
   },
 ]
