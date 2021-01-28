@@ -1,0 +1,43 @@
+var id = {Sheets ID};
+var app = SpreadsheetApp.openById(id);
+var sheet = app.getSheets()[0];
+var data = sheet.getDataRange().getValues();
+
+function doGet(e) {
+  var content = getResponseJSON(); 
+  var param = e.parameter;
+  var s = param.s;
+
+  if(s.length != 3){
+    content['errCode'] = 1
+    content['message'] = 'What?'
+    return ContentService.createTextOutput(JSON.stringify(content) ).setMimeType(ContentService.MimeType.JSON); 
+  }
+
+  var find_flag = -1;
+  for(var i=0;i < data.length; i++){
+    if(data[i][1] == s){
+      find_flag = i
+      break
+    }
+  }
+
+  if(find_flag == -1){
+    content['errCode'] = 2
+    content['message'] = 'I cannot find that!'
+    return ContentService.createTextOutput(JSON.stringify(content) ).setMimeType(ContentService.MimeType.JSON); 
+  }
+  
+  content['err'] = false;
+  content['t'] = data[find_flag][2];
+  return ContentService.createTextOutput(JSON.stringify(content) ).setMimeType(ContentService.MimeType.JSON); 
+}
+
+function getResponseJSON(){
+  var json = {
+    'err': true,
+    'errCode': 0,
+    'message': 'N/A',
+  }; 
+  return json; 
+}

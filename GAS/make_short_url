@@ -1,0 +1,71 @@
+var id = {Sheets ID};
+var app = SpreadsheetApp.openById(id);
+var sheet = app.getSheets()[0];
+var data = sheet.getDataRange().getValues();
+var ID_LENGTH = 3;
+
+function get_time(){
+  timezone = "GMT+08:00"
+  var date = Utilities.formatDate(new Date(), timezone, "yyyy-MM-dd HH:mm:ss");
+  Logger.log(date);
+  return date
+}
+
+function doGet(e) {
+  var content = getResponseJSON(); 
+  var param = e.parameter;
+  var u = param.u;
+
+  if(u.length <= 0){
+    content['errCode'] = 1
+    content['message'] = 'Cannot find the text.'
+    return ContentService.createTextOutput(JSON.stringify(content) ).setMimeType(ContentService.MimeType.JSON); 
+  }
+  if(u.length > 2000){
+    content['errCode'] = 1
+    content['message'] = 'The text length just can lower than 200 letters.'
+    return ContentService.createTextOutput(JSON.stringify(content) ).setMimeType(ContentService.MimeType.JSON); 
+  }
+
+  var time_stamp = get_time();
+  var short_id = generateUID();
+  
+  var LastRow = sheet.getLastRow();
+  sheet.getRange(LastRow+1, 1).setValue(time_stamp);
+  sheet.getRange(LastRow+1, 2).setValue(short_id);
+  sheet.getRange(LastRow+1, 3).setValue(u);
+  
+  content['err'] = false;
+  content['s'] = short_id;
+  return ContentService.createTextOutput(JSON.stringify(content) ).setMimeType(ContentService.MimeType.JSON); 
+}
+
+function compare_shortID(shortID){
+  for(var i=0;i < data.length; i++){
+    if(data[i][2] == shortID){
+      return false;
+    }
+  }
+  return true;
+}
+
+function getResponseJSON(){
+  var json = {
+    'err': true,
+    'errCode': 0,
+    'message': 'N/A',
+  }; 
+  return json; 
+}
+
+function generateUID() {
+  var ALPHABET = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-*=_';
+  var rtn = '';
+  for (var i = 0; i < ID_LENGTH; i++) {
+    rtn += ALPHABET.charAt(Math.floor(Math.random() * ALPHABET.length));
+  }
+  if(!compare_shortID(rtn))
+    return generateUID();
+  else
+    return rtn;
+}
