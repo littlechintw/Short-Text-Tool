@@ -46,8 +46,7 @@
 </template>
 
 <script>
-// @ is an alias to /src
-// import HelloWorld from "@/components/HelloWorld.vue";
+let Base64 = require('js-base64').Base64
 
 export default {
   name: "Home",
@@ -85,7 +84,7 @@ export default {
       .then((resp) => {
         console.log(resp);
         if (!resp.data.err) {
-          this.content = resp.data.t;
+          this.content = Base64.decode(resp.data.t);
           this.progressLinear.color = "info";
           this.form.summit = false;
         } else {

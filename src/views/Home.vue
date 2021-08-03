@@ -21,7 +21,7 @@
     >
       <v-progress-linear
         buffer-value="0"
-        :color="progressLinear.color"
+        :color="progressLinearColor"
         reverse
         stream
         value="0"
@@ -33,14 +33,14 @@
               ref="form"
               v-model="valid"
               lazy-validation
-              @submit="validate"
+              @submit="makeShort"
               onSubmit="return false;"
             >
               <v-text-field
                 v-model="text"
                 :rules="textRules"
                 counter
-                maxlength="2000"
+                maxlength="1500"
                 label="Text"
               ></v-text-field>
 
@@ -48,7 +48,7 @@
                 :disabled="!valid"
                 color="success"
                 class="mr-4"
-                @click="validate"
+                @click="makeShort"
               >
                 Short it!
               </v-btn>
@@ -59,11 +59,18 @@
       </v-container>
       <v-progress-linear
         buffer-value="0"
-        :color="progressLinear.color"
+        :color="progressLinearColor"
         stream
         value="0"
       ></v-progress-linear>
     </v-card>
+
+    <v-overlay :value="requestOverlay">
+      <v-progress-circular
+        indeterminate
+        size="64"
+      ></v-progress-circular>
+    </v-overlay>
 
     <!-- Show the final result -->
     <v-card
@@ -85,54 +92,60 @@
 </template>
 
 <script>
-// @ is an alias to /src
-// import HelloWorld from "@/components/HelloWorld.vue";
+let Base64 = require('js-base64').Base64
 
 export default {
   name: "Home",
   components: {},
-  data: () => ({
-    window_height: 700,
-    window_width: 1600,
-    submitStatus: false,
-    valid: true,
-    text: "",
-    textRules: [(v) => !!v || "Text is required"],
-    checkbox: false,
-    shortUrl: "N/A",
-    copyBtn: {
-      color: "info",
-      text: "Copy the URL!",
-    },
-    progressLinear: {
-      color: "info",
-    },
-    form: {
-      summit: false,
-    },
-  }),
+  data() {
+    return {
+      window_height: 700,
+      window_width: 1600,
+      submitStatus: false,
+      sendStatus: false,
+      requestOverlay: false,
+      valid: true,
+      text: "",
+      textRules: [(v) => !!v || "Text is required"],
+      checkbox: false,
+      shortUrl: "N/A",
+      copyBtn: {
+        color: "info",
+        text: "Copy the URL!",
+      },
+      progressLinearColor: "info",
+      form: {
+        summit: false,
+      },
+    }
+  },
   methods: {
-    validate() {
-      this.$refs.form.validate();
-      this.progressLinear.color = "red";
-      this.form.summit = true;
-      let api_url =
-        "https://script.google.com/macros/s/AKfycbwS03etsMVVn6w6eP28a5I8WX3c1VbaBNXF17iQjyl0f3DujD6ynqPZ/exec?u=" +
-        this.text;
-      this.$axios
-        .get(api_url)
-        .then((resp) => {
-          console.log(resp);
-          if (!resp.data.err) {
-            this.submitStatus = true;
-            this.shortUrl = "s.littlechin.tw/" + resp.data.s;
-          }
-        })
-        .catch((err) => {
-          alert(err);
-        });
-      this.progressLinear.color = "info";
-      this.form.summit = false;
+    makeShort() {
+      this.requestOverlay = true;
+      if (!this.sendStatus && this.text.length <= 1500) {
+        this.sendStatus = true;
+        this.progressLinearColor = "red";
+        this.form.summit = true;
+        let api_url =
+          "https://script.google.com/macros/s/AKfycbwS03etsMVVn6w6eP28a5I8WX3c1VbaBNXF17iQjyl0f3DujD6ynqPZ/exec?u=" +
+          Base64.encode(this.text);
+        this.$axios
+          .get(api_url)
+          .then((resp) => {
+            console.log(resp);
+            if (!resp.data.err) {
+              this.submitStatus = true;
+              this.shortUrl = "s.littlechin.tw/" + resp.data.s;
+              this.sendStatus = false;
+            }
+          })
+          .catch((err) => {
+            alert(err);
+          });
+        this.progressLinearColor = "info";
+        this.form.summit = false;
+        this.requestOverlay = false;
+      }
     },
     copyText() {
       navigator.clipboard.writeText('https://' + this.shortUrl);
