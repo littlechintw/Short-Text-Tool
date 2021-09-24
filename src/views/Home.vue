@@ -36,13 +36,13 @@
               @submit="makeShort"
               onSubmit="return false;"
             >
-              <v-text-field
+              <v-textarea
                 v-model="text"
                 :rules="textRules"
                 counter
                 maxlength="1500"
                 label="Text"
-              ></v-text-field>
+              ></v-textarea>
 
               <v-btn
                 :disabled="!valid"
