@@ -1,0 +1,100 @@
+/**
+ * Request Body 範例 (新增):
+ * {
+ * "action": "create",
+ * "content": "https://google.com"
+ * }
+ * * Request Body 範例 (查詢):
+ * {
+ * "action": "get",
+ * "short_id": "a1B"
+ * }
+ * * Response Body 範例:
+ * {
+ * "err": false,
+ * "s": "a1B",       // 新增時回傳
+ * "t": "https://...", // 查詢時回傳
+ * "isUrl": true,
+ * "message": "Success"
+ * }
+ */
+
+var SPREADSHEET_ID = "{Sheets ID}";
+var app = SpreadsheetApp.openById(SPREADSHEET_ID);
+var sheet = app.getSheets()[0];
+var ID_LENGTH = 3;
+
+// 簡單檢查字串是否為 URL
+function checkIsUrl(str) {
+  var urlPattern = /^(http|https):\/\/[^ "]+$/;
+  return urlPattern.test(str);
+}
+
+function doPost(e) {
+  var response = { 'err': true, 'message': 'N/A' };
+  
+  try {
+    var postData = JSON.parse(e.postData.contents);
+    var action = postData.action;
+
+    // --- 模式：新增 (Create) ---
+    if (action === "create") {
+      var content = postData.content;
+      if (!content || content.length > 2000) {
+        response.message = "Content too long or empty.";
+        return sendResponse(response);
+      }
+
+      var isUrl = checkIsUrl(content);
+      var short_id = generateUID();
+      var time_stamp = Utilities.formatDate(new Date(), "GMT+08:00", "yyyy-MM-dd HH:mm:ss");
+
+      // 欄位順序：時間, 短碼, 內容, 是否為網址
+      sheet.appendRow([time_stamp, short_id, content, isUrl]);
+
+      response.err = false;
+      response.s = short_id;
+      response.isUrl = isUrl;
+      response.message = "Created successfully";
+    } 
+    
+    // --- 模式：查詢 (Get) ---
+    else if (action === "get") {
+      var s = postData.short_id;
+      var data = sheet.getDataRange().getValues();
+      var foundRow = data.find(row => row[1] === s);
+
+      if (!foundRow) {
+        response.message = "Short ID not found.";
+        return sendResponse(response);
+      }
+
+      response.err = false;
+      response.t = foundRow[2];      // 原本內容
+      response.isUrl = foundRow[3];  // 儲存的布林值
+      response.message = "Found";
+    }
+
+  } catch (err) {
+    response.message = "Error: " + err.toString();
+  }
+
+  return sendResponse(response);
+}
+
+function sendResponse(content) {
+  return ContentService.createTextOutput(JSON.stringify(content))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function generateUID() {
+  var ALPHABET = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-*=_';
+  var rtn = '';
+  for (var i = 0; i < ID_LENGTH; i++) {
+    rtn += ALPHABET.charAt(Math.floor(Math.random() * ALPHABET.length));
+  }
+  
+  var data = sheet.getDataRange().getValues();
+  var exists = data.some(row => row[1] === rtn);
+  return exists ? generateUID() : rtn;
+}

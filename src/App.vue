@@ -1,45 +1,77 @@
 <template>
   <div id="app">
-    <v-app>
-      <v-app-bar app dark>
-        <v-toolbar-title>Short Text Tool</v-toolbar-title>
-        <v-spacer></v-spacer>
-      </v-app-bar>
+    <header class="app-header">
+      <h1>Short Text Tool</h1>
+    </header>
 
-      <v-content>
-        <router-view />
-      </v-content>
+    <main class="app-main">
+      <router-view />
+    </main>
 
-      <v-footer padless class="font-weight-medium">
-        <v-col class="text-center" cols="12" style="font-size: 14px">
-          &copy; {{ new Date().getFullYear() }} Copyright
-          <a href="https://littlechintw.github.io">littlechintw.github.io</a>.
-          All rights reserved.
-        </v-col>
-      </v-footer>
-    </v-app>
+    <footer class="app-footer">
+      <p>&copy; {{ new Date().getFullYear() }} Copyright <a href="https://littlechintw.github.io">littlechin.tw</a>. All rights reserved.</p>
+    </footer>
   </div>
 </template>
 
+<script>
+export default {
+  name: 'App'
+}
+</script>
+
 <style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  font-family: 'Roboto', sans-serif;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  color: #e0e0e0;
+}
+
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
+  background: rgba(0, 0, 0, 0.8);
+  padding: 1rem;
   text-align: center;
-  color: #2c3e50;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
-#nav {
-  padding: 30px;
+.app-header h1 {
+  color: #00d4ff;
+  font-size: 2rem;
+  margin: 0;
+  text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
 }
 
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
+.app-main {
+  flex: 1;
+  padding: 2rem 1rem;
 }
 
-#nav a.router-link-exact-active {
-  color: #42b983;
+.app-footer {
+  background: rgba(0, 0, 0, 0.8);
+  padding: 1rem;
+  text-align: center;
+  color: #888;
+}
+
+.app-footer a {
+  color: #00d4ff;
+  text-decoration: none;
+}
+
+.app-footer a:hover {
+  text-decoration: underline;
 }
 </style>
