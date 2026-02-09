@@ -99,31 +99,45 @@ npm run preview
 
 ## 部署
 
-專案包含 GitHub Actions 工作流程，用於自動部署到自訂域名。
+專案使用 GitHub Actions 工作流程自動部署到 GitHub Pages，並配置自訂域名 s.littlechin.tw。
 
 ### 部署設定
 
 1. **啟用 GitHub Pages**
-   - 前往 GitHub 倉庫設定
-   - 在 "Pages" 區段中選擇 "GitHub Actions" 作為來源
+   - 前往 GitHub 倉庫的 Settings > Pages
+   - 在 "Source" 下拉選單中選擇 "GitHub Actions"
+   - **重要**: 必須選擇 "GitHub Actions" 而非 "Deploy from a branch"，才能使用新的部署方式
 
 2. **設定自訂域名**
-   - 在倉庫的 `public` 目錄中已有 `CNAME` 文件
-   - 確保域名 `s.littlechin.tw` 的 DNS 指向 GitHub Pages
+   - 在倉庫的 `public` 目錄中已有 `CNAME` 文件，內容為 `s.littlechin.tw`
+   - 確保域名 `s.littlechin.tw` 的 DNS 記錄正確設定：
+     - 類型: CNAME
+     - 名稱: s
+     - 值: littlechintw.github.io
+   - 或使用 A 記錄指向 GitHub Pages 的 IP 地址
 
 3. **設定環境變數**
-   - 在 GitHub 倉庫的 "Settings" > "Secrets and variables" > "Actions" 中
+   - 在 GitHub 倉庫的 Settings > Secrets and variables > Actions
    - 新增 `VITE_GAS_URL` 秘密變數，設定為您的 Google Apps Script URL
 
 4. **觸發部署**
    - 推送程式碼到 `main` 分支
-   - GitHub Actions 會自動建構和部署
+   - GitHub Actions 會自動執行建構和部署
+   - 部署完成後，網站將可在 https://s.littlechin.tw 訪問
 
 ### 環境變數說明
 
 - `VITE_GAS_URL`: Google Apps Script API 端點 URL
   - 開發環境：從 `.env.local` 讀取
   - 生產環境：從 GitHub Secrets 讀取
+
+### 工作流程說明
+
+專案使用現代化的 GitHub Pages 部署方式：
+- 使用官方的 `actions/configure-pages`、`actions/upload-pages-artifact` 和 `actions/deploy-pages` actions
+- 分離建構和部署階段，提供更好的控制和錯誤處理
+- 自動設定必要的權限和並發控制
+- CNAME 文件會自動從 `public/` 目錄複製到建構輸出，確保自訂域名正確配置
 
 ## 專案結構
 
