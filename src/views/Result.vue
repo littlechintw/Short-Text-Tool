@@ -36,6 +36,7 @@
                 {{ copyContentBtn.text }}
               </button>
               <a
+                v-if="result.content"
                 :href="`https://sm.littlechin.tw/#t=${encodeURIComponent(result.content)}`"
                 target="_blank"
                 class="btn btn-info"
@@ -131,7 +132,7 @@ export default {
 
         if (!resData.err) {
           this.result.isUrl = resData.isUrl;
-          this.result.content = resData.t;
+          this.result.content = resData.t || "";
         } else {
           this.error = resData.message;
         }
